@@ -46,6 +46,10 @@ class MainActivity : AppCompatActivity() {
                         viewModel.loadDummyData()
                         return@setOnMenuItemClickListener true
                     }
+                    R.id.toggleHeaders->{
+                        trendingReposAdapter.toggleHeaders()
+                        return@setOnMenuItemClickListener true
+                    }
                     else -> {return@setOnMenuItemClickListener false}
                 }
             }

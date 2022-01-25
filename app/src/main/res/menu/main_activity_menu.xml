@@ -5,4 +5,8 @@
         android:id="@+id/loadDummyData"
         android:title="Load Dummy Data"/>
 
+    <item
+        android:id="@+id/toggleHeaders"
+        android:title="Show/Hide Headers"/>
+
 </menu>

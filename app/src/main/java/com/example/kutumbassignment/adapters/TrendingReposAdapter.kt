@@ -4,25 +4,54 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.kutumbassignment.dataClasses.Repository
+import com.example.kutumbassignment.dataClasses.RepositoryHeader
+import com.example.kutumbassignment.dataClasses.RepositoryListItem
+import com.example.kutumbassignment.databinding.HeaderItemViewBinding
 import com.example.kutumbassignment.databinding.RepoItemViewBinding
 
-class TrendingReposAdapter(private var list: List<Repository>): RecyclerView.Adapter<RepoViewHolder>() {
+class TrendingReposAdapter(private var list: List<RepositoryListItem>): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    var expandedViewPosition = -1
+    companion object{
+        const val TYPE_REPO = 0
+        const val TYPE_HEADER = 1
+    }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RepoViewHolder {
+    private var expandedViewPosition = -1
+    private var showHeaders = false
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        if(viewType == TYPE_HEADER) {
+            return HeaderViewHolder(
+                HeaderItemViewBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+            )
+        }
         return RepoViewHolder(
             RepoItemViewBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         )
     }
 
-    override fun onBindViewHolder(holder: RepoViewHolder, position: Int) {
-        holder.bind(list[position], position==expandedViewPosition){
-            selectItemAtPosition(it)
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        when(holder){
+            is RepoViewHolder->{
+                holder.bind(list[position] as Repository, position==expandedViewPosition){
+                    selectItemAtPosition(it)
+                }
+            }
+            is HeaderViewHolder->{
+                holder.bind(list[position] as RepositoryHeader)
+            }
         }
     }
 
     override fun getItemCount(): Int = list.size
+
+    override fun getItemViewType(position: Int): Int {
+        return when(list[position]){
+            is Repository -> TYPE_REPO
+            is RepositoryHeader -> TYPE_HEADER
+            else -> super.getItemViewType(position)
+        }
+    }
 
     private fun selectItemAtPosition(position: Int){
         if(expandedViewPosition == position){
@@ -39,8 +68,49 @@ class TrendingReposAdapter(private var list: List<Repository>): RecyclerView.Ada
     }
 
     fun setData(list: List<Repository>){
-        this.list = list
+        if(showHeaders){
+            this.list = addHeadersToList(list)
+        }else{
+            this.list = list
+        }
         notifyDataSetChanged()
+    }
+
+    private fun showHeaders(){
+        if(showHeaders) return
+        showHeaders = true
+        this.list = addHeadersToList(list)
+        notifyDataSetChanged()
+    }
+
+    private fun removeHeaders(){
+        if(!showHeaders) return
+        showHeaders = false
+        val tempList = ArrayList<Repository>()
+        for(item in list){
+            if(item is Repository){
+                tempList.add(item)
+            }
+        }
+        this.list = tempList
+        notifyDataSetChanged()
+    }
+
+    fun toggleHeaders(){
+        if(showHeaders) removeHeaders() else showHeaders()
+    }
+
+    fun addHeadersToList(list: List<RepositoryListItem>): List<RepositoryListItem>{
+        val tempList = ArrayList<RepositoryListItem>()
+        var prev: Repository? = null
+        for (item in list){
+            if(item is Repository && (prev==null || prev.language!=item.language)){
+                tempList.add(RepositoryHeader(item.language, item.languageColor))
+                prev = item
+            }
+            tempList.add((item))
+        }
+        return tempList
     }
 }
 
@@ -52,6 +122,15 @@ class RepoViewHolder(private val binding: RepoItemViewBinding): RecyclerView.Vie
         binding.root.setOnClickListener {
             onClick(adapterPosition)
         }
+        binding.executePendingBindings()
+    }
+
+}
+
+class HeaderViewHolder(private val binding: HeaderItemViewBinding): RecyclerView.ViewHolder(binding.root){
+
+    fun bind(header: RepositoryHeader){
+        binding.header = header
         binding.executePendingBindings()
     }
 

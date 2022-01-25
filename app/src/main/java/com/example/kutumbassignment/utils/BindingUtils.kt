@@ -27,7 +27,7 @@ object BindingUtils {
 
     @JvmStatic
     @BindingAdapter("color")
-    fun setColor(view: ImageView, color: String?){
+    fun setColor(view: View, color: String?){
         color?:return
         view.setBackgroundColor(Color.parseColor(color))
     }

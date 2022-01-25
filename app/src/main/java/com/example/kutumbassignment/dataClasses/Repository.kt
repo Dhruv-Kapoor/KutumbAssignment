@@ -1,5 +1,12 @@
 package com.example.kutumbassignment.dataClasses
 
+abstract class RepositoryListItem
+
+data class RepositoryHeader(
+	val languageName: String? = null,
+	val languageColor: String? = null
+): RepositoryListItem()
+
 data class Repository(
 	val forks: Int? = null,
 	val starsSince: Int? = null,
@@ -13,7 +20,7 @@ data class Repository(
 	val url: String? = null,
 	val username: String? = null,
 	val since: String? = null
-)
+): RepositoryListItem()
 
 data class BuiltByItem(
 	val avatar: String? = null,
