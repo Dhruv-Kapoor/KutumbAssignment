@@ -26,6 +26,16 @@ class MainActivity : AppCompatActivity() {
 
         initXmlViews()
         addObservers()
+        addClickListeners()
+    }
+
+    private fun addClickListeners() {
+        binding.btnRetry.setOnClickListener {
+            viewModel.refresh()
+        }
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            viewModel.refresh()
+        }
     }
 
     private fun addObservers() {
@@ -41,12 +51,21 @@ class MainActivity : AppCompatActivity() {
                     binding.shimmerLayout.startShimmer()
                 }
             }else{
+                binding.swipeRefreshLayout.isRefreshing = false
                 binding.shimmerLayout.visibility = View.GONE
                 binding.shimmerLayout.stopShimmer()
                 binding.recyclerView.visibility = View.VISIBLE
             }
         })
-
+        viewModel.getErrorStateLD().observe(this, {
+            if(it){
+                binding.recyclerView.visibility = View.GONE
+                binding.somethingWentWrong.visibility = View.VISIBLE
+            }else{
+                binding.recyclerView.visibility = View.VISIBLE
+                binding.somethingWentWrong.visibility = View.GONE
+            }
+        })
     }
 
     private fun initXmlViews(){
