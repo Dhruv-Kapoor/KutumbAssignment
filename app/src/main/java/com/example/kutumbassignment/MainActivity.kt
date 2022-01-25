@@ -1,5 +1,6 @@
 package com.example.kutumbassignment
 
+import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,19 +8,31 @@ import android.view.View
 import android.widget.PopupMenu
 import androidx.activity.viewModels
 import androidx.databinding.DataBindingUtil
+import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.kutumbassignment.adapters.TrendingReposAdapter
+import com.example.kutumbassignment.adapters.TrendingReposAdapterCallbacks
 import com.example.kutumbassignment.databinding.ActivityMainBinding
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), TrendingReposAdapterCallbacks {
+
+    companion object{
+        const val KEY_LAST_EXPANDED_RANK = "last_expanded_rank"
+    }
 
     private val viewModel by viewModels<MainActivityViewModel>{
         MainActivityViewModelFactory((application as TrendingRepoApplication).repository)
     }
     private lateinit var binding: ActivityMainBinding
 
-    private val trendingReposAdapter = TrendingReposAdapter(ArrayList())
+    private val trendingReposAdapter by lazy {
+        TrendingReposAdapter(ArrayList(), this)
+    }
+
+    private val sharedPreferences by lazy {
+        PreferenceManager.getDefaultSharedPreferences(this)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -91,5 +104,17 @@ class MainActivity : AppCompatActivity() {
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
         binding.recyclerView.adapter = trendingReposAdapter
         binding.recyclerView.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
+
+        if(sharedPreferences.contains(KEY_LAST_EXPANDED_RANK)){
+            trendingReposAdapter.selectItemAtRank(
+                sharedPreferences.getInt(KEY_LAST_EXPANDED_RANK, 0)
+            )
+        }
+    }
+
+    override fun onNewItemSelected(rank: Int) {
+        sharedPreferences.edit()
+            .putInt(KEY_LAST_EXPANDED_RANK, rank)
+            .apply()
     }
 }

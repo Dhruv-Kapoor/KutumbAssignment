@@ -9,13 +9,17 @@ import com.example.kutumbassignment.dataClasses.RepositoryListItem
 import com.example.kutumbassignment.databinding.HeaderItemViewBinding
 import com.example.kutumbassignment.databinding.RepoItemViewBinding
 
-class TrendingReposAdapter(private var list: List<RepositoryListItem>): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class TrendingReposAdapter(
+    private var list: List<RepositoryListItem>,
+    private val callbacks: TrendingReposAdapterCallbacks
+    ): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     companion object{
         const val TYPE_REPO = 0
         const val TYPE_HEADER = 1
     }
 
+    private var expandedViewRank = -1
     private var expandedViewPosition = -1
     private var showHeaders = false
 
@@ -33,8 +37,9 @@ class TrendingReposAdapter(private var list: List<RepositoryListItem>): Recycler
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when(holder){
             is RepoViewHolder->{
-                holder.bind(list[position] as Repository, position==expandedViewPosition){
-                    selectItemAtPosition(it)
+                val repo = list[position] as Repository
+                holder.bind(repo, repo.rank==expandedViewRank){ rank, pos->
+                    selectItemAtPosition(rank, pos)
                 }
             }
             is HeaderViewHolder->{
@@ -53,18 +58,38 @@ class TrendingReposAdapter(private var list: List<RepositoryListItem>): Recycler
         }
     }
 
-    private fun selectItemAtPosition(position: Int){
-        if(expandedViewPosition == position){
+    fun selectItemAtRank(rank: Int){
+        var position = -1
+        for(i in list.indices){
+            val item = list[i]
+            if(item is Repository && item.rank == rank){
+                position = i
+            }
+        }
+        selectItemAtPosition(rank, position)
+    }
+
+    fun selectItemAtPosition(rank: Int, position: Int){
+        if(position>=list.size || position<0){
+            expandedViewRank = rank
+            expandedViewPosition = -1
+            return
+        }
+        if(expandedViewRank == rank && expandedViewPosition!=-1){
+            expandedViewRank = -1
             expandedViewPosition = -1
             notifyItemChanged(position)
+            callbacks.onNewItemSelected(rank)
             return
         }
         val prev = expandedViewPosition
         expandedViewPosition = position
+        expandedViewRank = rank
         if(prev>=0){
             notifyItemChanged(prev)
         }
         notifyItemChanged(position)
+        callbacks.onNewItemSelected(rank)
     }
 
     fun setData(list: List<Repository>){
@@ -74,6 +99,7 @@ class TrendingReposAdapter(private var list: List<RepositoryListItem>): Recycler
             this.list = list
         }
         notifyDataSetChanged()
+        selectItemAtRank(expandedViewRank)
     }
 
     private fun showHeaders(){
@@ -97,6 +123,7 @@ class TrendingReposAdapter(private var list: List<RepositoryListItem>): Recycler
     }
 
     fun toggleHeaders(){
+        selectItemAtPosition(-1,-1)
         if(showHeaders) removeHeaders() else showHeaders()
     }
 
@@ -116,11 +143,11 @@ class TrendingReposAdapter(private var list: List<RepositoryListItem>): Recycler
 
 class RepoViewHolder(private val binding: RepoItemViewBinding): RecyclerView.ViewHolder(binding.root){
 
-    fun bind(repository: Repository, isExpanded: Boolean, onClick: (Int)->Unit) {
+    fun bind(repository: Repository, isExpanded: Boolean, onClick: (Int, Int)->Unit) {
         binding.repository = repository
         binding.isExpanded = isExpanded
         binding.root.setOnClickListener {
-            onClick(adapterPosition)
+            onClick(repository.rank?:0, adapterPosition)
         }
         binding.executePendingBindings()
     }
@@ -134,4 +161,8 @@ class HeaderViewHolder(private val binding: HeaderItemViewBinding): RecyclerView
         binding.executePendingBindings()
     }
 
+}
+
+interface TrendingReposAdapterCallbacks{
+    fun onNewItemSelected(position: Int)
 }
