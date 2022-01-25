@@ -51,6 +51,9 @@ class MainActivity : AppCompatActivity(), TrendingReposAdapterCallbacks {
         binding.btnRetry.setOnClickListener {
             viewModel.refresh()
         }
+        binding.btnLoadDummy.setOnClickListener {
+            viewModel.loadDummyData()
+        }
         binding.swipeRefreshLayout.setOnRefreshListener {
             viewModel.refresh()
         }

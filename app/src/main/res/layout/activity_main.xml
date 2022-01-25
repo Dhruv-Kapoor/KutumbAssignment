@@ -103,7 +103,7 @@
                         android:layout_height="wrap_content"
                         android:adjustViewBounds="true"
                         app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintBottom_toTopOf="@id/btnLoadDummy"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         android:src="@drawable/something_went_wrong"/>
@@ -115,6 +115,16 @@
                         app:layout_constraintTop_toBottomOf="@id/ivSomethingWentWrong"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"/>
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btnLoadDummy"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintBottom_toTopOf="@id/btnRetry"
+                        android:text="Load Dummy Data"
+                        android:background="@drawable/retry_btn_bg"
+                        android:layout_margin="16dp"
+                        android:textColor="@color/green"/>
 
                     <androidx.appcompat.widget.AppCompatButton
                         android:id="@+id/btnRetry"
