@@ -7,6 +7,6 @@ import retrofit2.http.GET
 interface TrendingApiService {
 
     @GET("repositories")
-    fun getTrendingRepos(): Call<List<Repository?>>
+    fun getTrendingRepos(): Call<List<Repository>>
 
 }

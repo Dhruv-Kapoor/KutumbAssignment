@@ -8,11 +8,11 @@ import retrofit2.Response
 
 class TrendingApiRepository {
 
-    fun getTrendingRepos(onResponse: (List<Repository?>?, Boolean)->Unit){
-        TrendingApiClient.api.getTrendingRepos().enqueue(object: Callback<List<Repository?>>{
+    fun getTrendingRepos(onResponse: (List<Repository>?, Boolean)->Unit){
+        TrendingApiClient.api.getTrendingRepos().enqueue(object: Callback<List<Repository>>{
             override fun onResponse(
-                call: Call<List<Repository?>>,
-                response: Response<List<Repository?>>
+                call: Call<List<Repository>>,
+                response: Response<List<Repository>>
             ) {
                 if(response.code()==200){
                     onResponse(response.body(), true)
@@ -21,7 +21,7 @@ class TrendingApiRepository {
                 }
             }
 
-            override fun onFailure(call: Call<List<Repository?>>, t: Throwable) {
+            override fun onFailure(call: Call<List<Repository>>, t: Throwable) {
                 onResponse(null, false)
             }
 

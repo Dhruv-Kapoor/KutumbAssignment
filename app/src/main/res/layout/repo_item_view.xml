@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+        <import type="android.graphics.Color" />
+
+        <variable
+            name="repository"
+            type="com.example.kutumbassignment.dataClasses.Repository" />
+
+        <variable
+            name="isExpanded"
+            type="Boolean" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        elevationBasedOnExpanded="@{isExpanded}"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/background_color"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="16dp">
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/ivProfilePic"
+            glide="@{repository.builtBy.get(0).avatar}"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:scaleType="centerCrop"
+            android:theme="@style/CircularImageView"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tvUserName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="@{repository.username}"
+            android:textSize="12sp"
+            app:layout_constraintStart_toEndOf="@id/ivProfilePic"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="name" />
+
+        <TextView
+            android:id="@+id/tvRepoName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="@{repository.repositoryName}"
+            android:textSize="16sp"
+            app:layout_constraintStart_toStartOf="@id/tvUserName"
+            app:layout_constraintTop_toBottomOf="@id/tvUserName"
+            tools:text="Repository Name" />
+
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/expandedViewsGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="@{isExpanded?View.VISIBLE:View.GONE}"
+            app:constraint_referenced_ids="tvDescription, ivLanguage, tvLanguage, ivForks, tvForks, ivStars, tvStars" />
+
+        <TextView
+            android:id="@+id/tvDescription"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@{repository.description}"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0"
+            app:layout_constraintStart_toStartOf="@id/tvUserName"
+            app:layout_constraintTop_toBottomOf="@id/tvRepoName"
+            tools:text="Description" />
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/ivLanguage"
+            color="@{repository.languageColor}"
+            android:layout_width="8dp"
+            android:layout_height="8dp"
+            android:theme="@style/CircularImageView"
+            app:layout_constraintBottom_toBottomOf="@id/tvLanguage"
+            app:layout_constraintStart_toStartOf="@id/tvUserName"
+            app:layout_constraintTop_toTopOf="@id/tvLanguage" />
+
+        <TextView
+            android:id="@+id/tvLanguage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="8dp"
+            android:text="@{repository.language}"
+            android:textSize="12sp"
+            app:layout_constraintStart_toEndOf="@id/ivLanguage"
+            app:layout_constraintTop_toBottomOf="@id/tvDescription"
+            tools:text="C#" />
+
+        <ImageView
+            android:id="@+id/ivStars"
+            android:layout_width="12dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:adjustViewBounds="true"
+            android:src="@drawable/ic_star"
+            app:layout_constraintBottom_toBottomOf="@id/tvStars"
+            app:layout_constraintStart_toEndOf="@id/tvLanguage"
+            app:layout_constraintTop_toTopOf="@id/tvStars" />
+
+        <TextView
+            android:id="@+id/tvStars"
+            numberedText="@{repository.totalStars}"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="8dp"
+            android:text="@{repository.language}"
+            android:textSize="12sp"
+            app:layout_constraintStart_toEndOf="@id/ivStars"
+            app:layout_constraintTop_toBottomOf="@id/tvDescription"
+            tools:text="12,345" />
+
+        <ImageView
+            android:id="@+id/ivForks"
+            android:layout_width="12dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:adjustViewBounds="true"
+            android:src="@drawable/ic_fork"
+            app:layout_constraintBottom_toBottomOf="@id/tvForks"
+            app:layout_constraintStart_toEndOf="@id/tvStars"
+            app:layout_constraintTop_toTopOf="@id/tvForks" />
+
+        <TextView
+            android:id="@+id/tvForks"
+            numberedText="@{repository.forks}"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="8dp"
+            android:text="@{repository.language}"
+            android:textSize="12sp"
+            app:layout_constraintStart_toEndOf="@id/ivForks"
+            app:layout_constraintTop_toBottomOf="@id/tvDescription"
+            tools:text="12,345" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
