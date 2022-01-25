@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import android.widget.PopupMenu
 import androidx.activity.viewModels
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -35,6 +36,20 @@ class MainActivity : AppCompatActivity() {
         }
         binding.swipeRefreshLayout.setOnRefreshListener {
             viewModel.refresh()
+        }
+        binding.ivMenu.setOnClickListener {
+            val popupMenu = PopupMenu(this, binding.ivMenu)
+            popupMenu.inflate(R.menu.main_activity_menu)
+            popupMenu.setOnMenuItemClickListener {
+                when(it.itemId){
+                    R.id.loadDummyData->{
+                        viewModel.loadDummyData()
+                        return@setOnMenuItemClickListener true
+                    }
+                    else -> {return@setOnMenuItemClickListener false}
+                }
+            }
+            popupMenu.show()
         }
     }
 
