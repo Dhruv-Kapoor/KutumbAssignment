@@ -21,7 +21,7 @@ class TrendingReposAdapter(
 
     private var expandedViewRank = -1
     private var expandedViewPosition = -1
-    private var showHeaders = false
+    private var showHeaders = true
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         if(viewType == TYPE_HEADER) {
@@ -125,6 +125,7 @@ class TrendingReposAdapter(
     fun toggleHeaders(){
         selectItemAtPosition(-1,-1)
         if(showHeaders) removeHeaders() else showHeaders()
+        callbacks.onHeadersToggled(showHeaders)
     }
 
     fun addHeadersToList(list: List<RepositoryListItem>): List<RepositoryListItem>{
@@ -138,6 +139,12 @@ class TrendingReposAdapter(
             tempList.add((item))
         }
         return tempList
+    }
+
+    fun setShowHeaders(boolean: Boolean) {
+        if(showHeaders!=boolean){
+            toggleHeaders()
+        }
     }
 }
 
@@ -165,4 +172,5 @@ class HeaderViewHolder(private val binding: HeaderItemViewBinding): RecyclerView
 
 interface TrendingReposAdapterCallbacks{
     fun onNewItemSelected(position: Int)
+    fun onHeadersToggled(value: Boolean)
 }

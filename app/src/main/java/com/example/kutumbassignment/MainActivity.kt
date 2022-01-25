@@ -19,6 +19,7 @@ class MainActivity : AppCompatActivity(), TrendingReposAdapterCallbacks {
 
     companion object{
         const val KEY_LAST_EXPANDED_RANK = "last_expanded_rank"
+        const val KEY_SHOW_HEADERS = "show_headers"
     }
 
     private val viewModel by viewModels<MainActivityViewModel>{
@@ -110,11 +111,22 @@ class MainActivity : AppCompatActivity(), TrendingReposAdapterCallbacks {
                 sharedPreferences.getInt(KEY_LAST_EXPANDED_RANK, 0)
             )
         }
+        if(sharedPreferences.contains(KEY_SHOW_HEADERS)){
+            trendingReposAdapter.setShowHeaders(
+                sharedPreferences.getBoolean(KEY_SHOW_HEADERS, true)
+            )
+        }
     }
 
     override fun onNewItemSelected(rank: Int) {
         sharedPreferences.edit()
             .putInt(KEY_LAST_EXPANDED_RANK, rank)
+            .apply()
+    }
+
+    override fun onHeadersToggled(value: Boolean) {
+        sharedPreferences.edit()
+            .putBoolean(KEY_SHOW_HEADERS, value)
             .apply()
     }
 }
