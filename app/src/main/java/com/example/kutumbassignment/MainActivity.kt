@@ -90,7 +90,7 @@ class MainActivity : AppCompatActivity(), TrendingReposAdapterCallbacks {
             }
         })
         viewModel.getErrorStateLD().observe(this, {
-            if(it){
+            if(it && viewModel.getTrendingReposLD().value.isNullOrEmpty()){
                 binding.recyclerView.visibility = View.GONE
                 binding.somethingWentWrong.visibility = View.VISIBLE
             }else{
