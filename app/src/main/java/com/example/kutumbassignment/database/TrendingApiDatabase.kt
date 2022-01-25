@@ -5,9 +5,10 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import com.example.kutumbassignment.dataClasses.Favorites
 import com.example.kutumbassignment.dataClasses.Repository
 
-@Database(entities = [Repository::class], version = 1)
+@Database(entities = [Repository::class, Favorites::class], version = 1)
 @TypeConverters(DataConverter::class)
 abstract class TrendingApiDatabase: RoomDatabase() {
 

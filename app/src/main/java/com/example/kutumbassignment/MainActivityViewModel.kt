@@ -1,6 +1,7 @@
 package com.example.kutumbassignment
 
 import androidx.lifecycle.*
+import com.example.kutumbassignment.dataClasses.Favorites
 import com.example.kutumbassignment.dataClasses.Repository
 import com.example.kutumbassignment.repository.TrendingApiRepository
 import kotlinx.coroutines.launch
@@ -35,6 +36,12 @@ class MainActivityViewModel(private val repository: TrendingApiRepository): View
         viewModelScope.launch {
             repository.loadDummyData()
             loadingState.postValue(false)
+        }
+    }
+
+    fun addFavorite(repo: Repository) {
+        viewModelScope.launch {
+            repository.addFavorite(repo)
         }
     }
 

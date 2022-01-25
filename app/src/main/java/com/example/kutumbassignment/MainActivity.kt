@@ -1,5 +1,6 @@
 package com.example.kutumbassignment
 
+import android.content.Intent
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -13,6 +14,8 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.kutumbassignment.adapters.TrendingReposAdapter
 import com.example.kutumbassignment.adapters.TrendingReposAdapterCallbacks
+import com.example.kutumbassignment.dataClasses.Favorites
+import com.example.kutumbassignment.dataClasses.Repository
 import com.example.kutumbassignment.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity(), TrendingReposAdapterCallbacks {
@@ -63,6 +66,11 @@ class MainActivity : AppCompatActivity(), TrendingReposAdapterCallbacks {
                     R.id.toggleHeaders->{
                         trendingReposAdapter.toggleHeaders()
                         return@setOnMenuItemClickListener true
+                    }
+                    R.id.favorites->{
+                        val intent = Intent(this, FavoriteActivity::class.java)
+                        startActivity(intent)
+                        return@setOnMenuItemClickListener  true
                     }
                     else -> {return@setOnMenuItemClickListener false}
                 }
@@ -128,5 +136,13 @@ class MainActivity : AppCompatActivity(), TrendingReposAdapterCallbacks {
         sharedPreferences.edit()
             .putBoolean(KEY_SHOW_HEADERS, value)
             .apply()
+    }
+
+    override fun addFavorite(repository: Repository) {
+        viewModel.addFavorite(repository)
+    }
+
+    override fun removeFavorite(repository: Favorites) {
+        //Do Nothing
     }
 }

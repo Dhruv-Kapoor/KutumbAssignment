@@ -2,10 +2,14 @@ package com.example.kutumbassignment.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
+import com.example.kutumbassignment.R
+import com.example.kutumbassignment.dataClasses.Favorites
 import com.example.kutumbassignment.dataClasses.Repository
 import com.example.kutumbassignment.dataClasses.RepositoryHeader
 import com.example.kutumbassignment.dataClasses.RepositoryListItem
+import com.example.kutumbassignment.databinding.FavoriteItemViewBinding
 import com.example.kutumbassignment.databinding.HeaderItemViewBinding
 import com.example.kutumbassignment.databinding.RepoItemViewBinding
 
@@ -17,6 +21,7 @@ class TrendingReposAdapter(
     companion object{
         const val TYPE_REPO = 0
         const val TYPE_HEADER = 1
+        const val TYPE_FAVORITE = 2
     }
 
     private var expandedViewRank = -1
@@ -28,9 +33,15 @@ class TrendingReposAdapter(
             return HeaderViewHolder(
                 HeaderItemViewBinding.inflate(LayoutInflater.from(parent.context), parent, false)
             )
+        }else if(viewType == TYPE_FAVORITE){
+            return FavoriteViewHolder(
+                FavoriteItemViewBinding.inflate(LayoutInflater.from(parent.context), parent, false),
+                callbacks
+            )
         }
         return RepoViewHolder(
-            RepoItemViewBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+            RepoItemViewBinding.inflate(LayoutInflater.from(parent.context), parent, false),
+            callbacks
         )
     }
 
@@ -38,6 +49,12 @@ class TrendingReposAdapter(
         when(holder){
             is RepoViewHolder->{
                 val repo = list[position] as Repository
+                holder.bind(repo, repo.rank==expandedViewRank){ rank, pos->
+                    selectItemAtPosition(rank, pos)
+                }
+            }
+            is FavoriteViewHolder->{
+                val repo = list[position] as Favorites
                 holder.bind(repo, repo.rank==expandedViewRank){ rank, pos->
                     selectItemAtPosition(rank, pos)
                 }
@@ -54,6 +71,7 @@ class TrendingReposAdapter(
         return when(list[position]){
             is Repository -> TYPE_REPO
             is RepositoryHeader -> TYPE_HEADER
+            is Favorites -> TYPE_FAVORITE
             else -> super.getItemViewType(position)
         }
     }
@@ -102,6 +120,12 @@ class TrendingReposAdapter(
         selectItemAtRank(expandedViewRank)
     }
 
+    fun setFavoritesData(list: List<Favorites>){
+        showHeaders=false
+        this.list = list
+        notifyDataSetChanged()
+    }
+
     private fun showHeaders(){
         if(showHeaders) return
         showHeaders = true
@@ -148,13 +172,62 @@ class TrendingReposAdapter(
     }
 }
 
-class RepoViewHolder(private val binding: RepoItemViewBinding): RecyclerView.ViewHolder(binding.root){
+class RepoViewHolder(
+    private val binding: RepoItemViewBinding,
+    private val callbacks: TrendingReposAdapterCallbacks
+): RecyclerView.ViewHolder(binding.root){
 
     fun bind(repository: Repository, isExpanded: Boolean, onClick: (Int, Int)->Unit) {
         binding.repository = repository
         binding.isExpanded = isExpanded
         binding.root.setOnClickListener {
             onClick(repository.rank?:0, adapterPosition)
+        }
+        binding.ivMenu.setOnClickListener {
+            val popupMenu = PopupMenu(binding.root.context, binding.ivMenu)
+            popupMenu.inflate(R.menu.repo_item_menu)
+            popupMenu.menu.removeItem(R.id.removeFavorite)
+
+            popupMenu.setOnMenuItemClickListener {
+                when(it.itemId){
+                    R.id.addFavorite->{
+                        callbacks.addFavorite(repository)
+                    }
+                }
+                return@setOnMenuItemClickListener false
+            }
+            popupMenu.show()
+        }
+        binding.executePendingBindings()
+    }
+
+}
+
+class FavoriteViewHolder(
+    private val binding: FavoriteItemViewBinding,
+    private val callbacks: TrendingReposAdapterCallbacks
+): RecyclerView.ViewHolder(binding.root){
+
+    fun bind(repository: Favorites, isExpanded: Boolean, onClick: (Int, Int)->Unit) {
+        binding.repository = repository
+        binding.isExpanded = isExpanded
+        binding.root.setOnClickListener {
+            onClick(repository.rank?:0, adapterPosition)
+        }
+        binding.ivMenu.setOnClickListener {
+            val popupMenu = PopupMenu(binding.root.context, binding.ivMenu)
+            popupMenu.inflate(R.menu.repo_item_menu)
+            popupMenu.menu.removeItem(R.id.addFavorite)
+
+            popupMenu.setOnMenuItemClickListener {
+                when(it.itemId){
+                    R.id.removeFavorite->{
+                        callbacks.removeFavorite(repository)
+                    }
+                }
+                return@setOnMenuItemClickListener false
+            }
+            popupMenu.show()
         }
         binding.executePendingBindings()
     }
@@ -173,4 +246,6 @@ class HeaderViewHolder(private val binding: HeaderItemViewBinding): RecyclerView
 interface TrendingReposAdapterCallbacks{
     fun onNewItemSelected(position: Int)
     fun onHeadersToggled(value: Boolean)
+    fun addFavorite(repository: Repository)
+    fun removeFavorite(repository: Favorites)
 }

@@ -10,7 +10,7 @@
 
         <variable
             name="repository"
-            type="com.example.kutumbassignment.dataClasses.Repository" />
+            type="com.example.kutumbassignment.dataClasses.Favorites" />
 
         <variable
             name="isExpanded"

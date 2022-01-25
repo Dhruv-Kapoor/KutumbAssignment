@@ -2,6 +2,7 @@ package com.example.kutumbassignment.repository
 
 import androidx.lifecycle.MutableLiveData
 import com.example.kutumbassignment.dataClasses.BuiltByItem
+import com.example.kutumbassignment.dataClasses.Favorites
 import com.example.kutumbassignment.dataClasses.Repository
 import com.example.kutumbassignment.database.TrendingApiDao
 import com.example.kutumbassignment.retrofit.TrendingApiClient
@@ -15,6 +16,7 @@ import retrofit2.Response
 class TrendingApiRepository(private val dao: TrendingApiDao) {
 
     val trendingRepos = dao.getTrendingRepositories()
+    val favorites = dao.getFavorites()
     val error = MutableLiveData<Boolean>()
 
     suspend fun refresh(){
@@ -65,6 +67,14 @@ class TrendingApiRepository(private val dao: TrendingApiDao) {
         }
         delay(1000)
         dao.addTrendingRepository(list)
+    }
+
+    suspend fun addFavorite(repository: Repository) {
+        dao.addFavorite(Favorites(repository))
+    }
+
+    suspend fun removeFavorite(favorites: Favorites) {
+        dao.deleteFavorite(favorites)
     }
 
 }
